@@ -1,16 +1,26 @@
 package com.example.comicslibrary
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.comicslibrary.ui.theme.ComicsLibraryTheme
+import com.example.comicslibrary.view.CharacterDetailScreen
+import com.example.comicslibrary.view.CharactersBottomNav
+import com.example.comicslibrary.view.CollectionScreen
+import com.example.comicslibrary.view.LibraryScreen
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,25 +32,37 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    val navController = rememberNavController()
+                    ScaffoldWithBottomMenu(navController = navController)
+
+                    }
+
                 }
             }
+
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
-@Preview(showBackground = true)
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun GreetingPreview() {
-    ComicsLibraryTheme {
-        Greeting("Android")
+fun ScaffoldWithBottomMenu(navController : NavHostController) {
+    Scaffold(bottomBar = { CharactersBottomNav(navController = navController) }
+    ) {
+        NavHost(navController = navController, startDestination = Destination.Library.route) {
+
+            composable(route = Destination.Library.route) {
+                LibraryScreen()
+            }
+
+            composable(route = Destination.CharacterDetail.route) {
+                CharacterDetailScreen()
+            }
+
+            composable(route = Destination.Collection.route) {
+                CollectionScreen()
+            }
+
+        }
     }
 }
