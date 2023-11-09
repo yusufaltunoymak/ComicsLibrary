@@ -12,7 +12,7 @@ data class CharacterEntity(
     val id : Int,
     val apiId : Int?,
     val name : String?,
-    val thumbnail : String?,
+    val thumbnail : String,
     val comics : String?,
     val description : String?
 ) {

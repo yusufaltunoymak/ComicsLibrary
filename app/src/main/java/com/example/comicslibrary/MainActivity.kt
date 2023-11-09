@@ -77,7 +77,7 @@ fun ScaffoldWithBottomMenu(navController : NavHostController,vm : LibraryViewMod
             }
 
             composable(route = Destination.Collection.route) {
-                CollectionScreen()
+                CollectionScreen(cvm,navController)
             }
 
         }

@@ -24,6 +24,7 @@ object AppModule {
     @Provides
     fun provideCollectionDb(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, ComicsDatabase::class.java,DB)
+            .fallbackToDestructiveMigration()
             .build()
 
     @Provides
