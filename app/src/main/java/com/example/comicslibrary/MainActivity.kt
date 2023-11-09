@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Scaffold
@@ -20,10 +21,16 @@ import com.example.comicslibrary.view.CharacterDetailScreen
 import com.example.comicslibrary.view.CharactersBottomNav
 import com.example.comicslibrary.view.CollectionScreen
 import com.example.comicslibrary.view.LibraryScreen
+import com.example.comicslibrary.viewmodel.CollectionViewModel
+import com.example.comicslibrary.viewmodel.LibraryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val vm by viewModels<LibraryViewModel>()
+    private val cvm by viewModels<CollectionViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -34,7 +41,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    ScaffoldWithBottomMenu(navController = navController)
+                    ScaffoldWithBottomMenu(navController = navController,vm,cvm)
 
                     }
 
@@ -47,17 +54,26 @@ class MainActivity : ComponentActivity() {
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun ScaffoldWithBottomMenu(navController : NavHostController) {
+fun ScaffoldWithBottomMenu(navController : NavHostController,vm : LibraryViewModel, cvm : CollectionViewModel) {
     Scaffold(bottomBar = { CharactersBottomNav(navController = navController) }
-    ) {
+    ) {paddingValues ->
         NavHost(navController = navController, startDestination = Destination.Library.route) {
 
             composable(route = Destination.Library.route) {
-                LibraryScreen()
+                LibraryScreen(navController,vm)
             }
 
             composable(route = Destination.CharacterDetail.route) {
-                CharacterDetailScreen()
+                val id = it.arguments?.getString("characterId")?.toIntOrNull()
+                if(id != null) {
+                    vm.retrieveSingleCharacter(id)
+                    CharacterDetailScreen(
+                        lvm = vm,
+                        cvm = cvm,
+                        paddingValues = paddingValues,
+                        navController = navController
+                    )
+                }
             }
 
             composable(route = Destination.Collection.route) {

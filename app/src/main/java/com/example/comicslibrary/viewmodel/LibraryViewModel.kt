@@ -21,11 +21,12 @@ class LibraryViewModel @Inject constructor(
         val result = repository.characters
         val queryText = MutableStateFlow("")
     private val queryInput = Channel<String>(Channel.CONFLATED)
+    val characterDetails = repository.characterDetails
 
     init {
         retrieveCharacters()
     }
-
+    @OptIn(kotlinx.coroutines.FlowPreview::class)
     private fun retrieveCharacters() {
         viewModelScope.launch(Dispatchers.IO) {
             queryInput.receiveAsFlow()
@@ -43,5 +44,9 @@ class LibraryViewModel @Inject constructor(
     fun onQueryUpdate(input : String) {
         queryText.value = input
         queryInput.trySend(input)
+    }
+
+    fun retrieveSingleCharacter(id:Int) {
+        repository.getSingleCharacter(id = id)
     }
 }

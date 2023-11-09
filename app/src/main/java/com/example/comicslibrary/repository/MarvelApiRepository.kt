@@ -1,5 +1,7 @@
 package com.example.comicslibrary.repository
 
+import androidx.compose.runtime.mutableStateOf
+import com.example.comicslibrary.model.CharacterResult
 import com.example.comicslibrary.model.CharactersApiResponse
 import com.example.comicslibrary.network.MarvelAPI
 import com.example.comicslibrary.util.NetworkResult
@@ -11,6 +13,7 @@ import retrofit2.Response
 class MarvelApiRepository(private val api : MarvelAPI) {
 
     val characters = MutableStateFlow<NetworkResult<CharactersApiResponse>>(NetworkResult.Initial())
+    val characterDetails = mutableStateOf<CharacterResult?>(null)
 
     fun query(query : String) {
         characters.value = NetworkResult.Loading()
@@ -36,6 +39,15 @@ class MarvelApiRepository(private val api : MarvelAPI) {
                 }
 
             })
+    }
+
+    fun getSingleCharacter(id : Int?) {
+        id?.let {
+            characterDetails.value = characters.value.data?.data?.results?.firstOrNull { character ->
+                character.id == id
+
+            }
+        }
     }
 
 }
